@@ -1,19 +1,44 @@
 #ifndef _TMAP_H_
 #define _TMAP_H_
 #include "defineMap.h"
-#include "tSala.h"
+//#include "tListSala.h"
+using namespace std;
+
+class tSala{
+	public:
+	int Norte,Sur,Este,Oeste;
+	int id=0;
+	tSala(){
+		//
+	}
+	
+	bool operator!(){
+		return this->id == 0;
+	}
+	bool isSala(){
+		if(this->id ==0)
+			return false;
+		return true;
+	}
+	void print(){
+		cout << this->id;
+	}
+	
+};
 
 ///////////////////////////////CLASS tMap///////////////////////////////
 
 class tMap{
 	private:
 
-
+	
 	int nsalas;
-	tSala array[MAXX][MAXY];
+	
 	unsigned int seed;
 	
 	public:
+	tSala array[MAXX][MAXY];
+	
 //Constructor sin semilla	
 	tMap(int numSalas){ 
 		int x = MAXX/2, y = MAXY/2;
