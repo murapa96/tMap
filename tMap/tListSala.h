@@ -5,20 +5,21 @@
 #include <iostream>
 #include <fstream>
 
-class tTile{
-	int id;
-};
-
 ///////////////////////////////CLASS tSALA//////////////////////////////
 class tListSala{
 	public:
-
-	tTile array[MAXB][MAXH];
-	tSala(){
-		//
-	}
+	typedef struct Sala{
+		int id;
+		int array[][];
+		int type;
+	}Sala;
+	Sala NULL={0,{0},0};
+	Sala almacen[];
+	int max = 0;
 	
-	tSala(string fileName){
+	tListSala():almacen({NULL});
+	
+	tListSala(string fileName){
 		ifstream myReadFile;
 		try{
 			myReadFile.open(fileName.c_str());
@@ -36,18 +37,20 @@ class tListSala{
 		myReadFile.close();
 		//
 	}
-	bool operator!(){
-		return this->id == 0;
+	Sala searchById(int id){
+		for(int i = 0; i < max ; i++){
+			if(almacen[i].id == id) 
+				return almacen[i];
+		}
+		return NULL;
 	}
-	bool isSala(){
-		if(this->id ==0)
-			return false;
-		return true;
-	}
-	void print(){
-		cout << this->id;
+	int addListToList(String filename){
+		//TODO
 	}
 	
+	int addSalaToList(Sala sala){
+		//TODO
+	}
 };
 
 ///////////////////////////////END CLASS tSALA//////////////////////////
