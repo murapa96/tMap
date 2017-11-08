@@ -5,9 +5,6 @@
 #include <iostream>
 #include <fstream>
 
-class tTile{
-	int id;
-};
 
 ///////////////////////////////CLASS tSALA//////////////////////////////
 class tListSala{
