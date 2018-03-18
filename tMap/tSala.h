@@ -4,8 +4,9 @@
 #define MAXB 10
 #include <iostream>
 #include <fstream>
+using namespace std;
 
-class tTile{
+class tTile{;
 	int id;
 };
 

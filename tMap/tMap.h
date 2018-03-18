@@ -94,34 +94,50 @@ class tMap{
 					nsalas--;
 					control = true;
 				}
-				
-				switch(rand()%4){
-					case 0:
-						if((array[x][y].Norte == 1)&&(y>1))
+				bool temp =true;
+				int i = 0;
+				while(temp==true){
+					switch(rand()%4){
+						case 0:
+							if((array[x][y].Norte == 1)&&(y>1))
+							{
+								y--;
+								temp =false;
+							}
+							break;
+						case 1:
+							if((array[x][y].Oeste == 1)&&(x>1))
+							{
+								x--;
+								temp =false;
+							}
+							break;
+						case 2:
+							if((array[x][y].Sur == 1)&&(y<MAXY-1))
+							{
+								y++;
+								temp =false;
+							}
+							break;
+						case 3:
+							if((array[x][y].Este == 1)&&(x<MAXX-1))
+							{
+								x++;
+								temp =false;
+							}
+							break;
+						
+					}
+				i++;
+				if (i == 35){
+					if(y>1)
 						{
-							y--;
+						y--;
+						temp =false;
 						}
-						break;
-					case 1:
-						if((array[x][y].Oeste == 1)&&(x>1))
-						{
-							x--;
-						}
-						break;
-					case 2:
-						if((array[x][y].Sur == 1)&&(y<MAXY-1))
-						{
-							y++;
-						}
-						break;
-					case 3:
-						if((array[x][y].Este == 1)&&(x<MAXX-1))
-						{
-							x++;
-						}
-						break;
-					
+					}	
 				}
+		
 			}
 				control = false;
 			}
@@ -182,33 +198,48 @@ class tMap{
 					nsalas--;
 					control = true;
 				}
-				
-				switch(rand()%4){
-					case 0:
-						if((array[x][y].Norte == 1)&&(y>1))
+				bool temp =true;
+				int i = 0;
+				while(temp==true){
+					switch(rand()%4){
+						case 0:
+							if((array[x][y].Norte == 1)&&(y>1))
+							{
+								y--;
+								temp =false;
+							}
+							break;
+						case 1:
+							if((array[x][y].Oeste == 1)&&(x>1))
+							{
+								x--;
+								temp =false;
+							}
+							break;
+						case 2:
+							if((array[x][y].Sur == 1)&&(y<MAXY-1))
+							{
+								y++;
+								temp =false;
+							}
+							break;
+						case 3:
+							if((array[x][y].Este == 1)&&(x<MAXX-1))
+							{
+								x++;
+								temp =false;
+							}
+							break;
+						
+					}
+				i++;
+				if (i == 35){
+					if(y>1)
 						{
-							y--;
+						y--;
+						temp =false;
 						}
-						break;
-					case 1:
-						if((array[x][y].Oeste == 1)&&(x>1))
-						{
-							x--;
-						}
-						break;
-					case 2:
-						if((array[x][y].Sur == 1)&&(y<MAXY-1))
-						{
-							y++;
-						}
-						break;
-					case 3:
-						if((array[x][y].Este == 1)&&(x<MAXX-1))
-						{
-							x++;
-						}
-						break;
-					
+					}	
 				}
 			}
 				control = false;
