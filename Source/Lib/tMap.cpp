@@ -1,106 +1,124 @@
 #include "tMap.h"
-#include "tSala.h"
 
-tMap::tMap()
-/*
- * 
- * tMap::tMap
- * Constructor de la clase tMap, clase que contiene las diversas salas al que jugador se puede ir moviendo.
- * También contiene la sala en la que se encuentra actualmente como la capacidad de moverse por ellas.
- *	Inicializa a partir de las puertas disponibles de la sala del Spawn salas aleatorias alrededor.
- * 
- */
-
-{
-	playerLocation = tSala();   //Inicializamos la posicion del jugador, este será siempre la sala en la que se encuentra el jugador.
-	playerLocation.generateTileSet(); //Antes, el tileSet se generaba en el propio constructor de tSala. He decidido separarlo como función.
-/*
- *Se comprueba la existencia de puertas en la sala generada. 
- * Las puertas usan lógica inversa, decisión propia. 
- * Si no existe una puerta, se genera una sala vacia (id = -1) esto se repite en el codigo.
- */		
-		if(playerLocation.este == false)
-			este =   tSala();
-		else
-			este =   tSala(-1);
-		if(playerLocation .oeste == false)
-			oeste =   tSala();
-		else
-			oeste =  tSala(-1);
-		if(playerLocation .norte == false)
-			norte =   tSala();
-		else
-			norte =  tSala(-1);
-		if(playerLocation .sur == false)
-			sur =   tSala();
-		else
-			sur =  tSala(-1);
-		
+tMap::tMap(int numSalas){ 
+	int x = MAXX/2, y = MAXY/2;
+	pX = x; pY = y; 
+	this->seed = time(NULL);
+	bool control=false;
+	srand(seed);
+	this->nsalas = numSalas;
+	generate(nsalas,x,y);
+	crearPuertas();
+	array[pX][pY].generateTileSet();
+	playerLocation = getSala(pX,pY);
+	nsalas = numSalas;
 }
-void tMap::ir(int door) /*0 -> Norte, 1 -> Sur, 2-> Este, 3-> Oeste* / 
-/*
- * Solo comentaré la primera función porque esto en un fúturo será la función "ir".
- * Basicamente, si existe sala (es decir, hay puerta y no es una sala nula)
- * substituye el valor de playerLocation por el valor de la sala en el norte, en el sur, en el este o en el oeste. 
- * 
- */
-{
-	bool done = false;
-	switch(door){
-		case 0:
-			if ((norte.id != -1)&&(playerLocation.norte==false)){ //Se comprueba si existe sala.
-				playerLocation = norte; //Movemos la sala a nosotros.
-				sur=tSala(); //Se crea sala en el sur.
-				playerLocation . sur = true; //Aunque se cierra la puerta
-				playerLocation.generateTileSet();  //generamos el tileSet. para que cuente la puerta cerrada.
-				done = true;
-			}
-		break;
-		case 1:
-			if ((sur.id != -1)&&(playerLocation.sur==false)){ //Se comprueba si existe sala.
-				playerLocation = sur; //Movemos la sala a nosotros.
-				norte=tSala(); //Se crea sala en el sur.
-				playerLocation.norte = true; //Aunque se cierra la puerta
-				playerLocation.generateTileSet();  //generamos el tileSet. para que cuente la puerta cerrada.
-				done = true;
-			}
-		break;
-		case 2:
-			if ((este.id != -1)&&(playerLocation.este==false)){ //Se comprueba si existe sala.
-				playerLocation = este; //Movemos la sala a nosotros.
-				oeste=tSala(); //Se crea sala en el sur.
-				playerLocation.oeste = true; //Aunque se cierra la puerta
-				playerLocation.generateTileSet();  //generamos el tileSet. para que cuente la puerta cerrada.
-				done = true;
-			}
-		break;
-		case 3:
-			if ((oeste.id != -1)&&(playerLocation.oeste==false)){ //Se comprueba si existe sala.
-				playerLocation = oeste; //Movemos la sala a nosotros.
-				este=tSala(); //Se crea sala en el sur.
-				playerLocation.este = true; //Aunque se cierra la puerta
-				playerLocation.generateTileSet();  //generamos el tileSet. para que cuente la puerta cerrada.
-				done = true;
-			}
-		break;
-			
+	
+tMap::tMap(unsigned int iSeed,int numSalas){ 
+	int x = MAXX/2, y = MAXY/2;
+	pX = x;
+	pY=y;
+	bool control=false;
+	this->seed = iSeed;
+	srand(seed);
+	this->nsalas = numSalas;
+	generate(nsalas,x,y);
+	crearPuertas();
+	array[pX][pY].generateTileSet();
+	playerLocation = getSala(pX,pY);
+	nsalas = numSalas;
+}
+	
+	
+tSala tMap::getSala(int x, int y){
+	return array[x][y];
+}
+
+unsigned int tMap::getSeed(){
+	return this->seed;
+}
+
+
+
+void tMap::crearPuertas(){
+	for(int x = 1; x < MAXX-1;x++){
+		for(int y = 1; y < MAXY-1; y++){
+			array[x][y].norte = (array[x][y-1].isSala() ? false:true );
+			array[x][y].este = (array[x+1][y].isSala() ? false:true );
+			array[x][y].oeste = (array[x-1][y].isSala() ? false:true );
+			array[x][y].sur = (array[x][y+1].isSala() ? false:true );
+			array[x][y].generateTileSet();
+
+		}
 	}
-		if(done){
-			if(playerLocation .este == false)  //Y como vimos en el primer caso, se comprueban las puertas y se crean las salas.
-				este =   tSala();
+}
+	
+		
+void tMap::ir(int door){
+	switch(door){
+		case ARRIBA:
+			if(array[pX][pY--].isSala()){
+			pY--;
+			playerLocation = getSala(pX,pY);
+		}
+		break;
+		case ABAJO:
+			if(array[pX][pY++].isSala()){
+			pY++;
+			playerLocation = getSala(pX,pY);
+		}
+		break;
+		case IZQUIERDA:
+			if(array[pX--][pY].isSala()){
+			pX--;
+			playerLocation = getSala(pX,pY);
+
+		}
+		break;
+		case DERECHA:
+			if(array[pX++][pY].isSala()){
+			pX++;
+			playerLocation = getSala(pX,pY);
+		}
+		break;
+	}
+	
+
+}
+
+void tMap::generate(int numSalas,int x,int y){
+	int nusalas = numSalas;
+	if(numSalas > 0){	
+		if (!array[x][y]) {
+			array[x][y] = tSala();
+
+			nusalas--;
+		}
+		switch(rand()% 4){
+			case 0:
+			if((array[x][y].norte == false)&&(y>1))
+				generate(nusalas - 1,x,y-1);
 			else
-				este = tSala(-1);
-			if(playerLocation .oeste == false)
-				oeste =   tSala();
+				array[x][y].norte = true;
+			break;
+			case 1:
+			if((array[x][y].oeste == false)&&(x>1))
+				generate(nusalas - 1,x-1,y);
 			else
-				oeste = tSala(-1);
-			if(playerLocation .norte == false)
-				norte =   tSala();
+				array[x][y].oeste = true;
+			break;
+			case 2:
+			if((array[x][y].sur == false)&&(y<MAXY-1))
+				generate(nsalas - 1,x,y+1);
 			else
-				norte = tSala(-1);
-			if(playerLocation .sur == false)
-				sur =   tSala();
+				array[x][y].sur = true;
+			break;
+			case 3:
+			if((array[x][y].este == false)&&(x<MAXX-1))
+				generate(nusalas - 1,x+1,y);
 			else
-				sur =   tSala(-1);
+				array[x][y].este = true;
+			break;
+		}
 	}
 }

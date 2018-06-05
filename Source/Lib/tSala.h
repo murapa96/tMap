@@ -3,18 +3,20 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-
+#include "defineMap.h"
 class tSala {
 public:
-	int tileMap[23] [23];
+	int tileMap[TILEX][TILEY];
 	int id;
-	bool norte, oeste, sur, este; 
+	int seed;
+	bool norte=true, oeste=true, sur=true, este=true; 
 	tSala();
-	tSala(int id);
+	tSala(int seed);
     void printTileSet();
     void generateTileSet();
-private:
-   
+    void generateTileSet(int seed);
+    bool operator!();
+    bool isSala();
     
     
 };

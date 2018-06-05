@@ -27,7 +27,7 @@ int main()
     //--------------------------------------------------------------------------------------
     int screenWidth = 22*32;
     int screenHeight = 22*32;
-    tMap mapa = tMap();    
+    tMap mapa = tMap(8);    
     InitWindow(screenWidth, screenHeight, "tMap Test");
     SetTargetFPS(60);
     //--------------------------------------------------------------------------------------
