@@ -6,15 +6,13 @@
 #include "defineMap.h"
 class tSala {
 public:
-	int tileMap[TILEX][TILEY];
+	tileSet tileMap;
 	int id;
 	int seed;
 	bool norte=true, oeste=true, sur=true, este=true; 
 	tSala();
 	tSala(int seed);
     void printTileSet();
-    void generateTileSet();
-    void generateTileSet(int seed);
     bool operator!();
     bool isSala();
     
