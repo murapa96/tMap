@@ -4,12 +4,12 @@
 #include <cstdlib>
 #include <ctime>
 #include "defineMap.h"
+#include "tileSet.h"
 class tSala {
 public:
-	tileSet tileMap;
+	tileSet *tileMap;
 	int id;
 	int seed;
-	bool norte=true, oeste=true, sur=true, este=true; 
 	tSala();
 	tSala(int seed);
     void printTileSet();

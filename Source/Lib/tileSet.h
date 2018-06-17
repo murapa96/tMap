@@ -1,13 +1,14 @@
 #ifndef _TILESET_
 #define _TILESET_
+#include <cstdlib>
+#include <ctime>
+#include "defineMap.h"
 
 class tileSet{
 	public:
-		tileSet();
+		tileSet(int seed);
 		void rotate();
-		tileSet getTileSet();
-	private:
-		int container[TILEX][TILEY];
-}
-
+		void setValue(int x, int y, int value);
+		int _TILESET[TILEX][TILEY];
+};
 #endif

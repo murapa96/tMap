@@ -1,124 +1,186 @@
 #include "tMap.h"
+tMap::~tMap(){
 
-tMap::tMap(int numSalas){ 
-	int x = MAXX/2, y = MAXY/2;
-	pX = x; pY = y; 
-	this->seed = time(NULL);
-	bool control=false;
+}
+tMap::tMap(int generationType, int nSalas, int seed){
+	this->generationType = generationType;
+	this->nSalas = nSalas;
+	this->seed=seed;
+	if(seed == 0)
+		this->seed = unsigned(time(0));
 	srand(seed);
-	this->nsalas = numSalas;
-	generate(nsalas,x,y);
-	crearPuertas();
-	array[pX][pY].generateTileSet();
-	playerLocation = getSala(pX,pY);
-	nsalas = numSalas;
-}
+	cout <<"Creando NODO...\n";
+	tNode nodo = nuevoNodo();
+	tPos nuevoElemento = &nodo;
+	cout <<"NODO CREADO";
+	posBank.push_back(nuevoElemento);
+	this -> mapa =	posBank.front();
+	nSalas--;
 	
-tMap::tMap(unsigned int iSeed,int numSalas){ 
-	int x = MAXX/2, y = MAXY/2;
-	pX = x;
-	pY=y;
-	bool control=false;
-	this->seed = iSeed;
-	srand(seed);
-	this->nsalas = numSalas;
-	generate(nsalas,x,y);
-	crearPuertas();
-	array[pX][pY].generateTileSet();
-	playerLocation = getSala(pX,pY);
-	nsalas = numSalas;
-}
-	
-	
-tSala tMap::getSala(int x, int y){
-	return array[x][y];
-}
-
-unsigned int tMap::getSeed(){
-	return this->seed;
-}
-
-
-
-void tMap::crearPuertas(){
-	for(int x = 1; x < MAXX-1;x++){
-		for(int y = 1; y < MAXY-1; y++){
-			array[x][y].norte = (array[x][y-1].isSala() ? false:true );
-			array[x][y].este = (array[x+1][y].isSala() ? false:true );
-			array[x][y].oeste = (array[x-1][y].isSala() ? false:true );
-			array[x][y].sur = (array[x][y+1].isSala() ? false:true );
-			array[x][y].generateTileSet();
-
-		}
-	}
-}
-	
-		
-void tMap::ir(int door){
-	switch(door){
-		case ARRIBA:
-			if(array[pX][pY--].isSala()){
-			pY--;
-			playerLocation = getSala(pX,pY);
-		}
-		break;
-		case ABAJO:
-			if(array[pX][pY++].isSala()){
-			pY++;
-			playerLocation = getSala(pX,pY);
-		}
-		break;
-		case IZQUIERDA:
-			if(array[pX--][pY].isSala()){
-			pX--;
-			playerLocation = getSala(pX,pY);
-
-		}
-		break;
-		case DERECHA:
-			if(array[pX++][pY].isSala()){
-			pX++;
-			playerLocation = getSala(pX,pY);
-		}
-		break;
+	switch(this->generationType){
+		case 0:
+			generadorIterativo();
+			break;
+		case 2:
+			generadorMultithread();
+			break;
+		default:
+			cout << "generador runtime";
 	}
 	
-
+	nSalas = nSalas;
+	this -> currentLocation = mapa;
+	
 }
 
-void tMap::generate(int numSalas,int x,int y){
-	int nusalas = numSalas;
-	if(numSalas > 0){	
-		if (!array[x][y]) {
-			array[x][y] = tSala();
-
-			nusalas--;
+tSala tMap::getCurrentSala(){
+	return currentLocation->sala;
+}
+void tMap::goUp(){
+	if(currentLocation->doorUp == true){
+		if(generationType == 1){
+			generarArriba(currentLocation);
 		}
-		switch(rand()% 4){
-			case 0:
-			if((array[x][y].norte == false)&&(y>1))
-				generate(nusalas - 1,x,y-1);
-			else
-				array[x][y].norte = true;
-			break;
-			case 1:
-			if((array[x][y].oeste == false)&&(x>1))
-				generate(nusalas - 1,x-1,y);
-			else
-				array[x][y].oeste = true;
-			break;
-			case 2:
-			if((array[x][y].sur == false)&&(y<MAXY-1))
-				generate(nsalas - 1,x,y+1);
-			else
-				array[x][y].sur = true;
-			break;
-			case 3:
-			if((array[x][y].este == false)&&(x<MAXX-1))
-				generate(nusalas - 1,x+1,y);
-			else
-				array[x][y].este = true;
-			break;
+		currentLocation = currentLocation -> nodeUp;
+	}
+}
+void tMap::goDown(){
+	if(currentLocation->doorDown == true){	
+		if(generationType == 1){
+			generarAbajo(currentLocation);
+		}
+		currentLocation = currentLocation -> nodeDown;
+	}
+}
+void tMap::goLeft(){
+	if(currentLocation->doorLeft == true){
+		if(generationType == 1){
+			generarIzquierda(currentLocation);
+		}
+		currentLocation = currentLocation -> nodeLeft;
+	}
+}
+void tMap::goRight(){
+	if(currentLocation->doorRight == true){
+		if(generationType == 1){
+			generarDerecha(currentLocation);
+		}
+		currentLocation = currentLocation -> nodeRight;
+	}
+}
+
+int tMap::getNumberSalas(){
+	return nSalas;
+}
+void tMap::generarArriba(tPos pos){
+	tNode aux = nuevoNodo();
+	if((nSalas > 0)&&(generationType!=1)){
+		pos -> nodeUp = &aux;
+		pos -> nodeUp -> nodeDown = pos;
+		pos -> nodeUp -> doorDown = true;
+		pos = pos -> nodeUp;
+		posBank.push_back(pos);
+		nSalas--;
+	}else if(generationType==1){
+		pos -> nodeUp = &aux;
+		pos -> nodeUp -> nodeDown = pos;
+		pos -> nodeUp -> doorDown = true;
+		pos = pos -> nodeUp;
+		posBank.push_back(pos);
+		nSalas++;
+	}
+}
+void tMap::generarAbajo(tPos pos){
+	tNode aux = nuevoNodo();
+	if((nSalas > 0)&&(generationType!=1)){
+		pos -> nodeDown = &aux;
+		pos -> nodeDown -> nodeUp = pos;
+		pos -> nodeDown -> doorUp = true;
+		pos = pos -> nodeDown;
+		posBank.push_back(pos);
+		nSalas--;
+	}else if(generationType==1){
+		pos -> nodeDown = &aux;
+		pos -> nodeDown-> nodeUp = pos;
+		pos -> nodeDown-> doorUp = true;
+		pos = pos -> nodeDown;
+		posBank.push_back(pos);
+		nSalas++;
+	}
+}
+void tMap::generarIzquierda(tPos pos){
+	tNode aux = nuevoNodo();
+	if((nSalas > 0)&&(generationType!=1)){
+		pos -> nodeLeft = &aux;
+		pos -> nodeLeft -> nodeRight = pos;
+		pos -> nodeLeft -> doorRight = true;
+		pos = pos -> nodeLeft;
+		posBank.push_back(pos);
+		nSalas--;
+	}else if(generationType==1){
+		pos -> nodeLeft = &aux;
+		pos -> nodeLeft -> nodeRight = pos;
+		pos -> nodeLeft -> doorRight = true;
+		pos = pos -> nodeLeft;
+		posBank.push_back(pos);
+		nSalas++;
+	}
+}
+void tMap::generarDerecha(tPos pos){
+	tNode aux = nuevoNodo();
+	if((nSalas > 0)&&(generationType!=1)){
+		pos -> nodeRight = &aux;
+		pos -> nodeRight -> nodeLeft = pos;
+		pos -> nodeRight -> doorLeft = true;
+		pos = pos -> nodeRight;
+		posBank.push_back(pos);
+		nSalas--;
+	}else if(generationType==1){
+		pos -> nodeRight = &aux;
+		pos -> nodeRight -> nodeLeft = pos;
+		pos -> nodeRight -> doorLeft = true;
+		pos = pos -> nodeRight;
+		posBank.push_back(pos);
+		nSalas++;
+	}
+}
+tNode tMap::nuevoNodo(){
+	tNode aux;
+	aux.sala = tSala();
+	aux.doorUp = (rand() % 100 < PROUP);
+	aux.doorLeft = (rand () % 100 < PROLEFT);
+	aux.doorRight = (rand () % 100 < PRORIGHT);
+	aux.doorDown = (rand () % 100 < PRODOWN);
+	aux.nodeUp = NULL;
+	aux.nodeDown = NULL;
+	aux.nodeLeft = NULL;
+	aux.nodeRight = NULL;
+	return aux;
+}
+void tMap::generadorIterativo(){
+	while(nSalas > 0){
+		for(size_t i = 0;i < posBank.size(); i++){
+			if(posBank[i]->doorUp == true)
+				generarArriba(posBank[i]);
+			if(posBank[i]->doorDown == true)
+				generarAbajo(posBank[i]);
+			if(posBank[i]->doorLeft == true)
+				generarIzquierda(posBank[i]);
+			if(posBank[i]->doorRight == true)
+				generarDerecha(posBank[i]);
 		}
 	}
+	for(size_t i = 0;i < posBank.size(); i++){
+		if((posBank[i]->doorUp == true)&&(posBank[i]->nodeUp == NULL))
+			posBank[i]->doorUp = false;
+		if((posBank[i]->doorDown == true)&&(posBank[i]->nodeDown == NULL))
+			posBank[i]->doorDown = false;
+		if((posBank[i]->doorLeft == true)&&(posBank[i]->nodeLeft == NULL))
+			posBank[i]->doorLeft = false;
+		if((posBank[i]->doorRight == true)&&(posBank[i]->nodeRight == NULL))
+			posBank[i]->doorRight = false;
+	}
+}
+void tMap::generadorMultithread(){
+
 }

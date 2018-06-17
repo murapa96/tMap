@@ -13,25 +13,21 @@ tSala::tSala(int seed)
  */
 
 {
-	seed = this->seed;
+	this->seed = seed;
+	tileMap = new tileSet(seed);
+	tileMap->rotate();
+	//srand(seed);
+	this->id = rand() % (MAXID+1);
 }
 
 tSala::tSala()
-/*
- *Constructor que unicamente genera las puertas aleatorias.
- * 
- * 
- * 
- * 
- */
  
 {
-	int generatedNumber = 1 + rand() % MAXID;
-	norte = (generatedNumber >= 15);
-	sur   = (generatedNumber <= 5);
-	este  = (generatedNumber >= 13);
-	oeste = (generatedNumber <= 9);
-
+	seed = time(NULL);
+	tileMap =new tileSet(seed);
+	tileMap->rotate();
+	srand(unsigned(seed));
+	this->id = rand() % (MAXID+1);
 }
 
 
@@ -48,7 +44,7 @@ bool tSala::isSala(){
 void tSala::printTileSet(){
         for(int x = 0 ; x < 21 ; x++ ){
             for (int y = 0;y < 21; y++)
-                cout <<" "<<tileMap[y][x]<<" ";
+                cout <<" "<<tileMap->_TILESET[x][y]<<" ";
         cout << "\n";
     }
 }
