@@ -1,124 +1,56 @@
 #include "tMap.h"
-
-tMap::tMap(int numSalas){ 
-	int x = MAXX/2, y = MAXY/2;
-	pX = x; pY = y; 
-	this->seed = time(NULL);
-	bool control=false;
-	srand(seed);
-	this->nsalas = numSalas;
-	generate(nsalas,x,y);
-	crearPuertas();
-	array[pX][pY].generateTileSet();
-	playerLocation = getSala(pX,pY);
-	nsalas = numSalas;
+#include "tSala.h"
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+/*0 -> norte, 1 - > oeste,2->sur, 3->este */
+tMap::tMap()
+{
+	pLocation = new tSala();
+	srand((unsigned)time(0));
 }
-	
-tMap::tMap(unsigned int iSeed,int numSalas){ 
-	int x = MAXX/2, y = MAXY/2;
-	pX = x;
-	pY=y;
-	bool control=false;
-	this->seed = iSeed;
-	srand(seed);
-	this->nsalas = numSalas;
-	generate(nsalas,x,y);
-	crearPuertas();
-	array[pX][pY].generateTileSet();
-	playerLocation = getSala(pX,pY);
-	nsalas = numSalas;
-}
-	
-	
-tSala tMap::getSala(int x, int y){
-	return array[x][y];
-}
+void tMap::irNorte()
+{
+	srand((unsigned)time(0));
 
-unsigned int tMap::getSeed(){
-	return this->seed;
-}
-
-
-
-void tMap::crearPuertas(){
-	for(int x = 1; x < MAXX-1;x++){
-		for(int y = 1; y < MAXY-1; y++){
-			array[x][y].norte = (array[x][y-1].isSala() ? false:true );
-			array[x][y].este = (array[x+1][y].isSala() ? false:true );
-			array[x][y].oeste = (array[x-1][y].isSala() ? false:true );
-			array[x][y].sur = (array[x][y+1].isSala() ? false:true );
-			array[x][y].generateTileSet();
-
-		}
+	if (pLocation->norte == 1) {
+		tSala *aux;
+		aux = pLocation;
+		pLocation = new tSala(2);
+		free(aux);
 	}
 }
-	
-		
-void tMap::ir(int door){
-	switch(door){
-		case ARRIBA:
-			if(array[pX][pY--].isSala()){
-			pY--;
-			playerLocation = getSala(pX,pY);
-		}
-		break;
-		case ABAJO:
-			if(array[pX][pY++].isSala()){
-			pY++;
-			playerLocation = getSala(pX,pY);
-		}
-		break;
-		case IZQUIERDA:
-			if(array[pX--][pY].isSala()){
-			pX--;
-			playerLocation = getSala(pX,pY);
+void tMap::irSur()
+{
+	srand((unsigned)time(0));
 
-		}
-		break;
-		case DERECHA:
-			if(array[pX++][pY].isSala()){
-			pX++;
-			playerLocation = getSala(pX,pY);
-		}
-		break;
+	if (pLocation->sur == 1) {
+		tSala *aux;
+		aux = pLocation;
+		pLocation = new tSala(0);
+		delete(aux);
 	}
-	
+}
+void tMap::irEste()
+{
+	srand((unsigned)time(0));
 
+	if (pLocation->este == 1) {
+		tSala *aux; 
+		aux = pLocation;
+		pLocation = new tSala(1);
+		delete(aux);
+	}
 }
 
-void tMap::generate(int numSalas,int x,int y){
-	int nusalas = numSalas;
-	if(numSalas > 0){	
-		if (!array[x][y]) {
-			array[x][y] = tSala();
+void tMap::irOeste()
+{
+	srand((unsigned)time(0));
 
-			nusalas--;
-		}
-		switch(rand()% 4){
-			case 0:
-			if((array[x][y].norte == false)&&(y>1))
-				generate(nusalas - 1,x,y-1);
-			else
-				array[x][y].norte = true;
-			break;
-			case 1:
-			if((array[x][y].oeste == false)&&(x>1))
-				generate(nusalas - 1,x-1,y);
-			else
-				array[x][y].oeste = true;
-			break;
-			case 2:
-			if((array[x][y].sur == false)&&(y<MAXY-1))
-				generate(nsalas - 1,x,y+1);
-			else
-				array[x][y].sur = true;
-			break;
-			case 3:
-			if((array[x][y].este == false)&&(x<MAXX-1))
-				generate(nusalas - 1,x+1,y);
-			else
-				array[x][y].este = true;
-			break;
-		}
+	if (pLocation->oeste == 1) {
+		tSala *aux;
+		aux = pLocation;
+		pLocation = new tSala(3);
+		delete(aux);
 	}
 }
